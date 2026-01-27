@@ -1,1 +1,3 @@
-// Create + Export a Redis client instance using the 'redis' package in Node.js.
+import Redis from "ioredis";
+
+export const redis = new Redis(process.env.REDIS_URL);
