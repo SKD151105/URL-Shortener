@@ -1,0 +1,1 @@
+// env Validation (Optional but good practice) --> Validating required env vars at startup
