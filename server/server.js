@@ -2,16 +2,18 @@ import "dotenv/config";
 import { logger } from "./utils/logger.js";
 import connectDB from "./config/db.js";
 import app from "./app.js";
-// import { validateEnv } from "./config/env.js";
+import { validateEnv } from "./config/env.js";
 
 const PORT = process.env.PORT || 5000;
 
+let server;
+
 const listenAsync = (port) => {
     return new Promise((resolve, reject) => {
-        const server = app
+        const instance = app
             .listen(port, () => {
                 logger.info(`Server running on port ${port}`);
-                resolve(server);
+                resolve(instance);
             })
             .on("error", reject);
     });
@@ -19,9 +21,9 @@ const listenAsync = (port) => {
 
 const startServer = async () => {
     try {
-        // validateEnv();
+        validateEnv();
         await connectDB();
-        await listenAsync(PORT); 
+        server = await listenAsync(PORT);
     } catch (error) {
         logger.error("Server startup error:", { error });
         process.exit(1);
@@ -29,3 +31,15 @@ const startServer = async () => {
 };
 
 startServer();
+
+const shutdown = () => {
+    logger.info("Shutting down...");
+    if (server) {
+        server.close(() => process.exit(0));
+        return;
+    }
+    process.exit(0);
+};
+
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
