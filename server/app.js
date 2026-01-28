@@ -7,6 +7,7 @@ import devRoutes from "./routes/dev.routes.js";
 import linkRoutes from "./routes/link.routes.js";
 import { ApiResponse } from "./utils/ApiResponse.js";
 import redirectRoutes from "./routes/redirect.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 import { requestId } from "./middlewares/requestId.middleware.js";
 import { requestLogger } from "./middlewares/requestLogger.middleware.js";
 
@@ -28,5 +29,6 @@ app.use("/api/v1/dev", devRoutes);
 app.use("/api/v1/links", linkRoutes);
 app.use("/api/v1/redirect", redirectRoutes);
 // app.use("/", redirectRoutes);
+app.use("/api/v1/analytics", analyticsRoutes);
 
 export default app;
