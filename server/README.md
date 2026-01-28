@@ -1,6 +1,6 @@
 # URL-Shortener API
 
-Backend API for creating short links with redirects, analytics, caching, and rate limiting. This README is written for interview-style walkthroughs: architecture, tradeoffs, and how to run locally.
+Backend API for short links with redirects, analytics, caching, and rate limiting. This README focuses on architecture and local setup.
 
 ## Architecture (simple)
 
@@ -121,13 +121,12 @@ Stop-Service memurai
 sudo service redis-server stop
 ```
 
-## Security Note
+## Why these choices
 
-Do not commit real secrets (DB passwords, API keys) to the repo.
+**API keys** for trusted clients keeps auth simple and fast for backend-only use.  
 
-## Interview Notes (why these choices)
+**Redis cache** reduces read latency for redirects and supports rate limiting.  
 
-- **API keys** for trusted clients keeps auth simple and fast for backend-only use.
-- **Redis cache** reduces read latency for redirects and supports rate limiting.
-- **Rate limiting** protects the redirect endpoint from abuse and shields DB/Redis.
-- **Centralized error handler** ensures stable error contracts and easier observability.
+**Rate limiting** protects the redirect endpoint from abuse and shields DB/Redis.  
+
+**Centralized error handler** ensures stable error contracts and easier observability.
