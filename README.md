@@ -9,9 +9,10 @@ Client
   │
   ▼
 API (Express)
-  │  ├─ Middlewares (CORS, Helmet, HPP, Rate Limit, Logger, Error Handler)
-  │  ├─ Controllers
-  │  └─ Services
+  │  ├─ Middlewares (CORS, Helmet, HPP, Rate Limit, Logger, Error Handler, Validation)
+  │  ├─ Controllers (thin)
+  │  ├─ Services (business logic)
+  │  └─ Repositories (DB queries)
   │
   ├─ MongoDB (Links, Users, Clicks)
   └─ Redis (cache + rate limiting)
@@ -26,6 +27,10 @@ x-api-key: <your_api_key>
 ```
 
 API keys are stored on the `User` model. Create a user with a unique `apiKey` in the database or add your own user creation endpoint.
+
+## Request Validation
+
+All endpoints use schema-based validation (Zod). Invalid requests return a 400 with validation details.
 
 ## Cache Strategy
 
@@ -45,9 +50,28 @@ TTL: 1 hour. Cache is used for fast redirects and to reduce DB reads. Rate limit
 ## API List
 
 - `GET /api/v1/health` — health check
-- `POST /api/v1/links` — create short link (auth required)
+- `POST /api/v1/links` — create short link (auth required) and returns `shortUrl`
 - `GET /api/v1/redirect/:code` — redirect to original URL
 - `GET /api/v1/analytics/:shortCode` — total clicks for a short code (auth required)
+
+### Create Link Response
+
+Response includes the created link fields plus a `shortUrl`:
+
+```
+{
+  "statusCode": 201,
+  "data": {
+    "_id": "...",
+    "originalUrl": "https://example.com",
+    "shortCode": "abc123",
+    "userId": "...",
+    "shortUrl": "http://localhost:3000/api/v1/redirect/abc123"
+  },
+  "message": "Link created",
+  "success": true
+}
+```
 
 ## Error Handling
 
@@ -130,3 +154,5 @@ sudo service redis-server stop
 **Rate limiting** protects the redirect endpoint from abuse and shields DB/Redis.  
 
 **Centralized error handler** ensures stable error contracts and easier observability.
+
+**Repository layer** keeps DB queries out of services/controllers.

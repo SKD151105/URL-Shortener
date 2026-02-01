@@ -1,17 +1,12 @@
-import { Click } from "../models/click.model.js";
-import { Link } from "../models/link.model.js";
-import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { getAnalyticsByShortCode } from "../services/analytics.service.js";
 
-export async function getLinkAnalytics(req, res) {
-    const { shortCode } = req.params;
-
-    const link = await Link.findOne({ shortCode });
-    if (!link) {
-        throw new ApiError(404, "Link not found");
+export async function getLinkAnalytics(req, res, next) {
+    try {
+        const { shortCode } = req.params;
+        const data = await getAnalyticsByShortCode(shortCode);
+        res.status(200).json(new ApiResponse(200, data, "Analytics fetched"));
+    } catch (error) {
+        next(error);
     }
-
-    const totalClicks = await Click.countDocuments({ linkId: link._id });
-
-    res.status(200).json(new ApiResponse(200, { totalClicks }, "Analytics fetched"));
 }

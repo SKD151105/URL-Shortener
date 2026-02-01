@@ -1,5 +1,5 @@
-import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
+import { findUserByApiKey } from "../repositories/user.repository.js";
 
 export async function apiKeyAuth(req, res, next) {
     const apiKey = req.headers["x-api-key"];
@@ -8,7 +8,7 @@ export async function apiKeyAuth(req, res, next) {
         return next(new ApiError(401, "API key required"));
     }
 
-    const user = await User.findOne({ apiKey });
+    const user = await findUserByApiKey(apiKey);
 
     if (!user) {
         return next(new ApiError(403, "Invalid API key"));

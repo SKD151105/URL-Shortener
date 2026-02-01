@@ -1,9 +1,9 @@
-import { Link } from "../models/link.model.js";
 import { generateCode } from "../utils/generateCode.js";
 import { ApiError } from "../utils/ApiError.js";
+import { createLink, findLinkByOriginalUrlAndUser } from "../repositories/link.repository.js";
 
 export async function createShortLink({ originalUrl, userId }) {
-    const existing = await Link.findOne({ originalUrl, userId });
+    const existing = await findLinkByOriginalUrlAndUser(originalUrl, userId);
     if (existing) {
         return existing;
     }
@@ -11,7 +11,7 @@ export async function createShortLink({ originalUrl, userId }) {
     for (let i = 0; i < 5; i++) {
         const shortCode = generateCode();
         try {
-            return await Link.create({ originalUrl, shortCode, userId });
+            return await createLink({ originalUrl, shortCode, userId });
         } catch (err) {
             if (err?.code !== 11000) {
                 throw err;
