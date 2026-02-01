@@ -3,7 +3,7 @@ import { countClicksByLinkId } from "../repositories/click.repository.js";
 import { findLinkByShortCode } from "../repositories/link.repository.js";
 
 export async function getAnalyticsByShortCode(shortCode) {
-    const link = await findLinkByShortCode(shortCode);
+    const link = await findLinkByShortCode(shortCode, { lean: true });
     if (!link) {
         throw new ApiError(404, "Link not found");
     }

@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { createLink, findLinkByOriginalUrlAndUser } from "../repositories/link.repository.js";
 
 export async function createShortLink({ originalUrl, userId }) {
-    const existing = await findLinkByOriginalUrlAndUser(originalUrl, userId);
+    const existing = await findLinkByOriginalUrlAndUser(originalUrl, userId, { lean: true });
     if (existing) {
         return existing;
     }

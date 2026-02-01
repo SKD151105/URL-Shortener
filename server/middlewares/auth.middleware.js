@@ -8,7 +8,7 @@ export async function apiKeyAuth(req, res, next) {
         return next(new ApiError(401, "API key required"));
     }
 
-    const user = await findUserByApiKey(apiKey);
+    const user = await findUserByApiKey(apiKey, { lean: true });
 
     if (!user) {
         return next(new ApiError(403, "Invalid API key"));
