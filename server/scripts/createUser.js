@@ -4,24 +4,20 @@ import { User } from "../models/user.model.js";
 import { generateApiKey } from "../utils/generateApiKey.js";
 
 async function main() {
-    const [,, username, email] = process.argv;
-    if (!username || !email) {
-        console.error("Usage: node scripts/createUser.js <username> <email>");
+    const [,, name] = process.argv;
+    if (!name) {
+        console.error("Usage: node scripts/createUser.js <name>");
         process.exit(1);
     }
 
-    await mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URI);
 
     const apiKey = generateApiKey();
     try {
-        const user = await User.create({ username, email, apiKey });
+        const user = await User.create({ name, apiKey });
         console.log("User created:", {
             id: user._id,
-            username: user.username,
-            email: user.email,
+            name: user.name,
             apiKey: user.apiKey,
         });
     } catch (err) {

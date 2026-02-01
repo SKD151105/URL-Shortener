@@ -95,7 +95,7 @@ npm install
 Run the user creation script:
 
 ```bash
-node scripts/createUser.js <username> <email>
+node scripts/createUser.js <name>
 ```
 
 This will generate a user with a secure API key. Copy the API key for use in requests.
