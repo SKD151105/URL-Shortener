@@ -9,7 +9,7 @@ export async function createShortLink({ originalUrl, userId }) {
     }
 
     for (let i = 0; i < 5; i++) {
-        const shortCode = generateCode();
+        const shortCode = generateCode(6 + i);
         try {
             return await createLink({ originalUrl, shortCode, userId });
         } catch (err) {
