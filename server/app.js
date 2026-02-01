@@ -16,11 +16,11 @@ const app = express();
 
 app.use(requestId);
 app.use(requestLogger);
-app.use(cors());
 app.use(helmet());
+app.use(cors());
 app.use(hpp());
-app.use(compression());
 app.use(express.json());
+app.use(compression());
 
 app.get("/api/v1/health", (req, res) => {
     res.status(200).json(new ApiResponse(200, { status: "ok" }, "Service healthy"));
