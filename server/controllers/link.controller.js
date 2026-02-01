@@ -1,6 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { createShortLink } from "../services/link.service.js";
+import { validateUrl } from "../utils/validateUrl.js";
 
 export async function createLink(req, res, next) {
     try {
@@ -8,6 +9,10 @@ export async function createLink(req, res, next) {
 
         if (!url) {
             return next(new ApiError(400, "URL is required"));
+        }
+
+        if (!validateUrl(url)) {
+            return next(new ApiError(400, "Invalid URL"));
         }
 
         const link = await createShortLink({
