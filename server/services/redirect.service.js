@@ -6,17 +6,23 @@ import { ApiError } from "../utils/ApiError.js";
 import { logger } from "../utils/logger.js";
 
 const CACHE_TTL_SECONDS = 60 * 60;
+const NEGATIVE_CACHE_TTL_SECONDS = 60;
+const NEGATIVE_CACHE_VALUE = "__NOT_FOUND__";
 
 const parseCacheValue = cachedValue => {
+    if (cachedValue === NEGATIVE_CACHE_VALUE) {
+        return { url: null, linkId: null, isJson: false, isNotFound: true };
+    }
     try {
         const parsed = JSON.parse(cachedValue);
         return {
             url: parsed?.url || cachedValue,
             linkId: parsed?.linkId || null,
             isJson: true,
+            isNotFound: false,
         };
     } catch {
-        return { url: cachedValue, linkId: null, isJson: false };
+        return { url: cachedValue, linkId: null, isJson: false, isNotFound: false };
     }
 };
 
@@ -29,7 +35,10 @@ export async function getRedirectUrl({ code, userAgent, ip }) {
     // 1. cache first
     const cachedValue = await redis.get(code);
     if (cachedValue) {
-        const { url: cachedUrl, linkId: cachedLinkId, isJson } = parseCacheValue(cachedValue);
+        const { url: cachedUrl, linkId: cachedLinkId, isJson, isNotFound } = parseCacheValue(cachedValue);
+        if (isNotFound) {
+            throw new ApiError(404, "Link not found");
+        }
         const isValidId = cachedLinkId && mongoose.Types.ObjectId.isValid(cachedLinkId);
 
         let resolvedLinkId = cachedLinkId;
@@ -39,7 +48,7 @@ export async function getRedirectUrl({ code, userAgent, ip }) {
         }
 
         if (!resolvedLinkId) {
-            await redis.del(code);
+            await redis.set(code, NEGATIVE_CACHE_VALUE, "EX", NEGATIVE_CACHE_TTL_SECONDS);
             throw new ApiError(404, "Link not found");
         }
 
@@ -59,6 +68,7 @@ export async function getRedirectUrl({ code, userAgent, ip }) {
     // 2. DB fallback
     const link = await findLinkByShortCode(code, { lean: true });
     if (!link) {
+        await redis.set(code, NEGATIVE_CACHE_VALUE, "EX", NEGATIVE_CACHE_TTL_SECONDS);
         throw new ApiError(404, "Link not found");
     }
 

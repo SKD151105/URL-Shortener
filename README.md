@@ -46,6 +46,8 @@ Redis caches each short code with a JSON payload:
 
 TTL: 1 hour. Cache is used for fast redirects and to reduce DB reads. Rate limiting also uses Redis.
 
+**Negative caching:** missing short codes are cached with a short TTL (1 minute) to avoid repeated DB hits for invalid links.
+
 ## Rate Limits
 
 - Create link: 10 requests per 60 seconds per user.
@@ -163,6 +165,12 @@ sudo service redis-server stop
 **API keys** for trusted clients keeps auth simple and fast for backend-only use.  
 
 **Redis cache** reduces read latency for redirects and supports rate limiting.  
+
+**Lean reads** are used in read-only queries to reduce Mongoose overhead.  
+
+**Negative caching** reduces repeated DB hits for invalid short codes.  
+
+**Adaptive short code length** increases length on collision retries to reduce duplicate key errors.  
 
 **Rate limiting** protects the redirect endpoint from abuse and shields DB/Redis.  
 

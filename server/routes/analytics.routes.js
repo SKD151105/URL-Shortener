@@ -6,6 +6,11 @@ import { analyticsParamsSchema } from "../validations/link.validation.js";
 
 const router = express.Router();
 
-router.get("/:shortCode", apiKeyAuth, validateRequest({ params: analyticsParamsSchema }), getLinkAnalytics);
+router.get(
+    "/:shortCode",
+    apiKeyAuth,
+    validateRequest({ params: analyticsParamsSchema }),
+    getLinkAnalytics
+);
 
 export default router;
