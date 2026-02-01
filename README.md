@@ -90,6 +90,15 @@ npm install
 ```
 
 ### 2) Configure environment
+### 2.5) Create a user (required for API access)
+
+Run the user creation script:
+
+```bash
+node scripts/createUser.js <username> <email>
+```
+
+This will generate a user with a secure API key. Copy the API key for use in requests.
 
 Create a `.env` file in the `server` directory:
 
