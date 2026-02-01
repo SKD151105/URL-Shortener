@@ -9,10 +9,14 @@ Client
   │
   ▼
 API (Express)
-  │  ├─ Middlewares (CORS, Helmet, HPP, Rate Limit, Logger, Error Handler, Validation)
+  │  ├─ Config (env, db, redis)
+  │  ├─ Validation (Zod schemas + validate middleware)
+  │  ├─ Middlewares (CORS, Helmet, HPP, Rate Limit, Logger, Error Handler)
+  │  ├─ Routes (link, redirect, analytics)
   │  ├─ Controllers (thin)
   │  ├─ Services (business logic)
   │  └─ Repositories (DB queries)
+  │  └─ Utils (errors, logger, helpers)
   │
   ├─ MongoDB (Links, Users, Clicks)
   └─ Redis (cache + rate limiting)
