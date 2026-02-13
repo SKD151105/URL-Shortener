@@ -204,6 +204,19 @@ These improvements were achieved by eliminating repeated MongoDB reads through R
 
 ---
 
+## Scalability Notes
+
+This service is designed to scale primarily by separating state (MongoDB + Redis) from stateless HTTP compute.
+
+- **Stateless API nodes:** Express instances do not require sticky sessions, so you can run multiple server replicas behind a load balancer.
+- **Read-heavy optimization:** Redis positive caching offloads hot redirect reads from MongoDB, increasing throughput as you add API replicas.
+- **Shared coordination via Redis:** Rate limiting and caching are centralized in Redis so limits remain consistent across replicas.
+- **Decoupled analytics writes:** Click logging is non-blocking in the redirect path (fire-and-forget DB write), reducing added latency.
+
+Practical bottlenecks are the backing stores (Redis and MongoDB). Under higher load, scaling typically means using a larger Redis instance/cluster and appropriately sized MongoDB (indexes + capacity), while horizontally scaling the API layer.
+
+---
+
 ## How to Benchmark and Reproduce Metrics
 
 ### Prerequisites
